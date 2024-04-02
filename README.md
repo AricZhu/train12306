@@ -1,5 +1,6 @@
+# 背景
+12306
 # 持续秒杀的高并发方案
-
 ## 前端
 - 静态资源上CDN
 - 页面静态化
@@ -24,14 +25,10 @@
 
 # Java9-17 新特性
 ## Java 9
-
 ### 模块化
 - 更精确的控制要导出的包中的某些类，而不需要使用 private
 - 使用 module-info.java 文件，通过 exports 来声明要导出的类、通过 requires 来声明要引入的类
-
-
 ## Java 10
-
 ### var 局部变量推导
 - 需要保证当前变量可以推导出准确类型
 - 必须初始化
@@ -65,9 +62,13 @@ String json = """
 ### instanceof 增强
 - 在使用 instanceof 判断时，可以直接接赋值语句，如下：
 ```java
-Object a = "Hello world!";
-if (a instanceof String b) {
-	System.out.println(b); // Hello world!
+public class Demo {
+    public static void main(String[] args) {
+        Object a = "Hello world!";
+        if (a instanceof String b) {
+            System.out.println(b); // Hello world!
+        }
+    }
 }
 ```
 
@@ -89,13 +90,17 @@ if (a instanceof String b) {
 ### switch 增强
 - 可以和 instanceof 合并，简化判断和赋值的步骤，如下：
 ```java
-Object a = "Hello world!";
+public class Demo {
+    public static void main(String[] args) {
+        Object a = "Hello world!";
 
-switch (a) {
-	case String b -> System.out.println(b);
-	case Integer b -> System.out.println(b);
-	case Long b -> System.out.println(b);
-	default -> System.out.println("default");
+        switch (a) {
+            case String b -> System.out.println(b);
+            case Integer b -> System.out.println(b);
+            case Long b -> System.out.println(b);
+            default -> System.out.println("default");
+        }
+    }
 }
 ```
 # Spring Boot 3 新特性
