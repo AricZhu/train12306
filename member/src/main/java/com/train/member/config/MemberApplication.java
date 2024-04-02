@@ -10,11 +10,11 @@ import org.springframework.core.env.Environment;
 @SpringBootApplication
 @ComponentScan("com.train")
 public class MemberApplication {
-    public static final Logger logger = LoggerFactory.getLogger(MemberApplication.class);
+    public static final Logger LOG = LoggerFactory.getLogger(MemberApplication.class);
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(MemberApplication.class);
         Environment env = application.run(args).getEnvironment();
-        logger.info("=== 启动成功 ===");
-        logger.info("地址: \thttp://127.0.0.1:{}{}/hello", env.getProperty("server.port"), env.getProperty("server.servlet.context-path"));
+        LOG.info("=== 启动成功 ===");
+        LOG.info("地址: \thttp://127.0.0.1:{}{}/hello", env.getProperty("server.port"), env.getProperty("server.servlet.context-path"));
     }
 }
