@@ -1,5 +1,6 @@
 package com.train.member.controller;
 
+import com.train.common.response.CommonResp;
 import com.train.member.request.MemberRegisterReq;
 import com.train.member.service.MemberService;
 import jakarta.validation.Valid;
@@ -12,7 +13,9 @@ public class MemberController {
     private MemberService memberService;
 
     @PostMapping("register")
-    public Long register(@Valid @RequestBody MemberRegisterReq req) {
-        return memberService.register(req.getMobile());
+    public CommonResp<Long> register(@Valid @RequestBody MemberRegisterReq req) {
+        long id = memberService.register(req.getMobile());
+
+        return new CommonResp<>(id);
     }
 }
