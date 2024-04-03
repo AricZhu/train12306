@@ -23,9 +23,9 @@ public class MemberController {
     }
 
     @PostMapping("/send-code")
-    public CommonResp<Long> sendCode(@Valid @RequestBody MemberSendCodeReq req) {
-        memberService.sendCode(req);
-        return new CommonResp<>();
+    public CommonResp<String> sendCode(@Valid @RequestBody MemberSendCodeReq req) {
+        String code = memberService.sendCode(req);
+        return new CommonResp<String>(code);
     }
 
     @PostMapping("/login")

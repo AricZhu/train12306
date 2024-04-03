@@ -22,6 +22,8 @@ import java.util.List;
 @Service
 public class MemberService {
     private static final Logger LOG = LoggerFactory.getLogger(MemberService.class);
+
+    private final String code = "8888";
     @Autowired
     private MemberMapper memberMapper;
 
@@ -41,7 +43,7 @@ public class MemberService {
         return member.getId();
     }
 
-    public void sendCode(MemberSendCodeReq req) {
+    public String sendCode(MemberSendCodeReq req) {
         String mobile = req.getMobile();
         Member memberDB = selectByMobile(mobile);
 
@@ -58,14 +60,15 @@ public class MemberService {
 
         // 生成验证码
         // String code = RandomUtil.randomString(4);
-        String code = "8888";
-        LOG.info("生成短信验证码：{}", code);
+        LOG.info("生成短信验证码：{}", this.code);
 
         // 保存短信记录表：手机号，短信验证码，有效期，是否已使用，业务类型，发送时间，使用时间
         LOG.info("保存短信记录表");
 
         // 对接短信通道，发送短信
         LOG.info("对接短信通道");
+
+        return this.code;
     }
 
     private Member selectByMobile(String mobile) {
@@ -90,7 +93,7 @@ public class MemberService {
         }
 
         // 校验短信验证码
-        if (!"8888".equals(code)) {
+        if (!this.code.equals(code)) {
             throw new BusinessException(BusinessExceptionEnum.MEMBER_MOBILE_CODE_ERROR);
         }
 
