@@ -1,5 +1,6 @@
 package com.train.member.service;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.train.common.exception.BusinessException;
@@ -8,7 +9,9 @@ import com.train.common.util.SnowUtil;
 import com.train.member.domain.Member;
 import com.train.member.domain.MemberExample;
 import com.train.member.mapper.MemberMapper;
+import com.train.member.request.MemberLoginReq;
 import com.train.member.request.MemberSendCodeReq;
+import com.train.member.response.MemberLoginResp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,5 +77,26 @@ public class MemberService {
         } else {
             return list.get(0);
         }
+    }
+
+    public MemberLoginResp login(MemberLoginReq req) {
+        String mobile = req.getMobile();
+        String code = req.getCode();
+        Member memberDB = selectByMobile(mobile);
+
+        // 如果手机号不存在，则插入一条记录
+        if (ObjectUtil.isNull(memberDB)) {
+            throw new BusinessException(BusinessExceptionEnum.MEMBER_MOBILE_NOT_EXIST);
+        }
+
+        // 校验短信验证码
+        if (!"8888".equals(code)) {
+            throw new BusinessException(BusinessExceptionEnum.MEMBER_MOBILE_CODE_ERROR);
+        }
+
+        MemberLoginResp memberLoginResp = BeanUtil.copyProperties(memberDB, MemberLoginResp.class);
+//        String token = JwtUtil.createToken(memberLoginResp.getId(), memberLoginResp.getMobile());
+//        memberLoginResp.setToken(token);
+        return memberLoginResp;
     }
 }
