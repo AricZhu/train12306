@@ -1,6 +1,12 @@
 # 背景
 Java 高并发项目
 
+# 线程本地变量
+- 可以将登陆信息存放到线程本地变量中(ThreadLocal)，方便后续直接使用,详细代码可参考 `LoginMemberContext`
+- 通过拦截器来实现统一的处理
+  - 拦截器定义：`MemberInterceptor`
+  - 拦截器注册：`SpringMvcConfig`
+
 # 短信验证码登陆
 - 使用图形验证码来防止脚本模拟发短信进行攻击
 

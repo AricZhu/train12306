@@ -12,7 +12,7 @@ import com.train.member.domain.MemberExample;
 import com.train.member.mapper.MemberMapper;
 import com.train.member.request.MemberLoginReq;
 import com.train.member.request.MemberSendCodeReq;
-import com.train.member.response.MemberLoginResp;
+import com.train.common.response.MemberLoginResp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
