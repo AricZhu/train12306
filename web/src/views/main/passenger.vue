@@ -126,7 +126,7 @@ export default defineComponent({
     };
 
     const handleOk = () => {
-      axios.post("/member/passenger/save", passenger.value).then((response) => {
+      axios.post("/member/save-passenger", passenger.value).then((response) => {
         let data = response.data;
         if (data.success) {
           notification.success({description: "保存成功！"});
