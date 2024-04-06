@@ -1,6 +1,19 @@
 # 背景
 Java 高并发项目
 
+# Long 精度丢失问题
+- 由于 Java 中的 Long 类型的最大值要比 JS 中的 Long 最大值大很多，因此后端如果直接返回 Long 类型到前端，会有精度丢失的问题
+- 解决办法是在返回的对象中对应字段上添加 Json 序列化，如下：
+```java
+public class PassengerQueryResp {
+    
+  @JsonSerialize(using= ToStringSerializer.class)
+  private Long id;
+  
+  // ...
+}
+```
+
 # 线程本地变量
 - 可以将登陆信息存放到线程本地变量中(ThreadLocal)，方便后续直接使用,详细代码可参考 `LoginMemberContext`
 - 通过拦截器来实现统一的处理

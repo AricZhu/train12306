@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 
 public class PassengerSaveReq {
-    private String id;
+    private Long id;
 
     private Long memberId;
 
@@ -32,11 +32,11 @@ public class PassengerSaveReq {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date updateTime;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
