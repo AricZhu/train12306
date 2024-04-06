@@ -31,14 +31,18 @@ public class PassengerService {
     public void savePassenger(PassengerSaveReq req) {
         Passenger passenger = new Passenger();
         BeanUtil.copyProperties(req, passenger);
-
         DateTime now = DateTime.now();
-        passenger.setId(SnowUtil.getSnowflakeNextId());
-        passenger.setMemberId(LoginMemberContext.getId());
-        passenger.setCreateTime(now);
-        passenger.setUpdateTime(now);
 
-        passengerMapper.insert(passenger);
+        if (ObjectUtil.isNull(passenger.getId())) {
+            passenger.setId(SnowUtil.getSnowflakeNextId());
+            passenger.setMemberId(LoginMemberContext.getId());
+            passenger.setCreateTime(now);
+            passenger.setUpdateTime(now);
+            passengerMapper.insert(passenger);
+        } else {
+            passenger.setUpdateTime(now);
+            passengerMapper.updateByPrimaryKey(passenger);
+        }
     }
 
     public PageResp<PassengerQueryResp> queryList(PassengerQueryReq req) {
@@ -64,5 +68,9 @@ public class PassengerService {
         pageResp.setTotal(pageInfo.getTotal());
         pageResp.setList(list);
         return pageResp;
+    }
+
+    public void delete(Long id) {
+        passengerMapper.deleteByPrimaryKey(id);
     }
 }

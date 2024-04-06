@@ -9,10 +9,7 @@ import com.train.member.response.PassengerQueryResp;
 import com.train.member.service.PassengerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class PassengerController {
@@ -31,5 +28,11 @@ public class PassengerController {
         PageResp<PassengerQueryResp> list = passengerService.queryList(req);
 
         return new CommonResp<>(list);
+    }
+
+    @DeleteMapping("/delete-passenger/{id}")
+    public CommonResp<Object> delete(@PathVariable Long id) {
+        passengerService.delete(id);
+        return new CommonResp<>();
     }
 }

@@ -1,12 +1,13 @@
 package com.train.member.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Date;
 
 public class PassengerSaveReq {
-    private Long id;
+    private String id;
 
     private Long memberId;
 
@@ -19,15 +20,23 @@ public class PassengerSaveReq {
     @NotBlank(message = "乘客类型不能为空")
     private String type;
 
+    /**
+     * 新增时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
 
+    /**
+     * 修改时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date updateTime;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
