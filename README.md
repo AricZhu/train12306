@@ -1,6 +1,19 @@
 # 背景
 Java 高并发项目
 
+# 日期序列化和反序列化问题
+- 在前端传过来的时间往往是非标准的日期格式，后端在解析日期的时候会直接报错，如下是前端发送给后端的日期字符串：
+```javascript
+createTime: "2024-04-06 09:04:27"
+```
+- 要解决上述日期解析问题需要添加如下的标注来告诉后端如何解析当前的日期字符串。**注意**：发送给前端的日期序列化同样可以用下面的标注将 Date 对象序列化为日期字符串
+```java
+public class PassengerSaveReq {
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
+}
+```
+
 # Long 精度丢失问题
 - 由于 Java 中的 Long 类型的最大值要比 JS 中的 Long 最大值大很多，因此后端如果直接返回 Long 类型到前端，会有精度丢失的问题
 - 解决办法是在返回的对象中对应字段上添加 Json 序列化，如下：
