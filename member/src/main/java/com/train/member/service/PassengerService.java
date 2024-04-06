@@ -28,7 +28,7 @@ public class PassengerService {
     @Autowired
     private PassengerMapper passengerMapper;
 
-    public void savePassenger(PassengerSaveReq req) {
+    public void save(PassengerSaveReq req) {
         Passenger passenger = new Passenger();
         BeanUtil.copyProperties(req, passenger);
         DateTime now = DateTime.now();
