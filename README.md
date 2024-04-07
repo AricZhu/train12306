@@ -38,6 +38,10 @@ public class ScheduleDemo {
 
 上述的并发执行问题在 quartz 中可以通过添加 @DisallowConcurrentExecution 注解来解决。
 
+## 使用数据库来控制 quartz
+- 一般实际生产中都是通过数据库的配置来控制 quartz 的定时任务
+- 具体可看 batch 模块中的代码
+
 
 # 日期序列化和反序列化问题
 - 在前端传过来的时间往往是非标准的日期格式，后端在解析日期的时候会直接报错，如下是前端发送给后端的日期字符串：
