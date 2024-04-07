@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class ScheduleDemo {
 
 //    @Scheduled(cron = "0/5 * * * * ?")
-    public void test() {
+    private void test() {
         System.out.println("dida");
     }
 }

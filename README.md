@@ -1,6 +1,29 @@
 # 背景
 Java 高并发项目
 
+# Spring 中的调度
+- 在 Spring 中使用自带的调度功能比较简单，如下示例，开启一个 5s 的定时任务
+```java
+package com.train.batch.job;
+
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+@Component
+@EnableScheduling
+public class ScheduleDemo {
+
+    @Scheduled(cron = "0/5 * * * * ?")
+    private void test() {
+        System.out.println("dida");
+    }
+}
+```
+
+- 一般这种定时任务只适用于单体应用，不适合集群。因为上述的 job 一般都不能重复跑，因此当上述代码部署到集群中后，每个应用都会跑这个 job，就会导致业务上的问题
+- 虽然问题可以通过增加分布式锁来解决，但还是有其他问题，比如无法实时的更改定时任务的状态和策略
+
 # 日期序列化和反序列化问题
 - 在前端传过来的时间往往是非标准的日期格式，后端在解析日期的时候会直接报错，如下是前端发送给后端的日期字符串：
 ```javascript
