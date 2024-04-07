@@ -32,6 +32,11 @@ public class ScheduleDemo {
 - 使用 quartz，需要实现 Job 接口
 - 在配置中声明任务、触发器
 - 详细代码可查看：QuartzDemo.java 和 QuartzConfig.java
+- 
+## 定时任务的并发执行问题
+在定时任务中有一个很关键的问题就是任务的并发执行，假设上一个任务运行很耗时，超过了定时间隔，那么下一个任务不等上一个任务结束就立刻开启，两个人物并发运行会造成很多意想不到的问题。
+
+上述的并发执行问题在 quartz 中可以通过添加 @DisallowConcurrentExecution 注解来解决。
 
 
 # 日期序列化和反序列化问题
