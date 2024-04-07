@@ -5,12 +5,18 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
-public class DailyTrainQueryReq extends PageReq {
+public class DailyTrainStationQueryReq extends PageReq {
 
+    /**
+     * 日期
+     */
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
 
-    private String code;
+    /**
+     * 车次编号
+     */
+    private String trainCode;
 
     public Date getDate() {
         return date;
@@ -20,19 +26,19 @@ public class DailyTrainQueryReq extends PageReq {
         this.date = date;
     }
 
-    public String getCode() {
-        return code;
+    public String getTrainCode() {
+        return trainCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setTrainCode(String trainCode) {
+        this.trainCode = trainCode;
     }
 
     @Override
     public String toString() {
-        return "DailyTrainQueryReq{" +
+        return "DailyTrainStationQueryReq{" +
                 "date=" + date +
-                ", code='" + code + '\'' +
+                ", trainCode='" + trainCode + '\'' +
                 "} " + super.toString();
     }
 }
