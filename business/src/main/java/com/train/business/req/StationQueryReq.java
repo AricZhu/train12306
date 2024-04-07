@@ -1,12 +1,12 @@
-package com.train.${module}.req;
+package com.train.business.req;
 
 import com.train.common.request.PageReq;
 
-public class ${Domain}QueryReq extends PageReq {
+public class StationQueryReq extends PageReq {
 
     @Override
     public String toString() {
-        return "${Domain}QueryReq{" +
+        return "StationQueryReq{" +
                 "} " + super.toString();
     }
 }

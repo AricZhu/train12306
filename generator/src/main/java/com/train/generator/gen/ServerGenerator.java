@@ -44,13 +44,13 @@ public class ServerGenerator {
         // 为DbUtil设置数据源
         Node connectionURL = document.selectSingleNode("//@connectionURL");
         Node userId = document.selectSingleNode("//@userId");
-        Node password = document.selectSingleNode("//@password");
+//        Node password = document.selectSingleNode("//@password");
         System.out.println("url: " + connectionURL.getText());
         System.out.println("user: " + userId.getText());
-        System.out.println("password: " + password.getText());
+//        System.out.println("password: " + password.getText());
         DbUtil.url = connectionURL.getText();
         DbUtil.user = userId.getText();
-        DbUtil.password = password.getText();
+//        DbUtil.password = password.getText();
 
         // 示例：表名 jiawa_test
         // Domain = JiawaTest
@@ -82,7 +82,7 @@ public class ServerGenerator {
         gen(Domain, param, "req", "queryReq");
         gen(Domain, param, "resp", "queryResp");
 
-        genVue(do_main, param);
+//        genVue(do_main, param);
     }
 
     private static void gen(String Domain, Map<String, Object> param, String packageName, String target) throws IOException, TemplateException {
