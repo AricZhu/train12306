@@ -53,7 +53,7 @@
   <a-modal v-model:visible="visible" title="请核对以下信息"
            style="top: 50px; width: 800px"
            ok-text="确认" cancel-text="取消"
-           @ok="showFirstImageCodeModal">
+           @ok="handleOk">
     <div class="order-tickets">
       <a-row class="order-tickets-header" v-if="tickets.length > 0">
         <a-col :span="3">乘客</a-col>
@@ -339,10 +339,12 @@ export default defineComponent({
     };
 
     const handleOk = () => {
+    /*
       if (Tool.isEmpty(imageCode.value)) {
         notification.error({description: '验证码不能为空'});
         return;
       }
+      */
 
       console.log("选好的座位：", chooseSeatObj.value);
 
@@ -388,7 +390,7 @@ export default defineComponent({
           imageCodeModalVisible.value = false;
           lineModalVisible.value = true;
           confirmOrderId.value = data.content;
-          queryLineCount();
+          // queryLineCount();
         } else {
           notification.error({description: data.message});
         }
@@ -400,6 +402,7 @@ export default defineComponent({
     let queryLineCountInterval;
 
     // 定时查询订单结果/排队数量
+    /*
     const queryLineCount = () => {
       confirmOrderLineCount.value = -1;
       queryLineCountInterval = setInterval(function () {
@@ -432,6 +435,7 @@ export default defineComponent({
         });
       }, 500);
     };
+    */
 
     /* ------------------- 第二层验证码 --------------------- */
     const imageCodeModalVisible = ref();

@@ -11,7 +11,10 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
+@RequestMapping("/passenger")
 public class PassengerController {
     @Autowired
     private PassengerService passengerService;
@@ -34,5 +37,11 @@ public class PassengerController {
     public CommonResp<Object> delete(@PathVariable Long id) {
         passengerService.delete(id);
         return new CommonResp<>();
+    }
+
+    @GetMapping("/query-mine")
+    public CommonResp<List<PassengerQueryResp>> queryMine() {
+        List<PassengerQueryResp> list = passengerService.queryMine();
+        return new CommonResp<>(list);
     }
 }
