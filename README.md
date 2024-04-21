@@ -1,8 +1,11 @@
 # 背景
 Java 高并发项目
 
-# OpenFeign
+# 远程调度 OpenFeign
 Spring Cloud OpenFeign是一种基于Spring Cloud的声明式REST客户端，它简化了与HTTP服务交互的过程。它将REST客户端的定义转化为Java接口，并且可以通过注解的方式来声明请求参数、请求方式、请求头等信息，从而使得客户端的使用更加方便和简洁。同时，它还提供了负载均衡和服务发现等功能，可以与Eureka、Consul等注册中心集成使用。Spring Cloud OpenFeign能够提高应用程序的可靠性、可扩展性和可维护性，是构建微服务架构的重要工具之一。
+
+- 使用 feign 来实现微服务之间的远程调度
+- 具体实现可看: DailyTrainJob.java
 
 # 定时调度任务
 
@@ -44,10 +47,7 @@ public class ScheduleDemo {
 ## 使用数据库来控制 quartz
 - 一般实际生产中都是通过数据库的配置来控制 quartz 的定时任务
 - 具体可看 batch 模块中的代码
-
-## 远程调度
-- 使用 feign 来实现微服务之间的远程调度
-- 具体实现可看: DailyTrainJob.java
+- 使用 OpenFeign 实现远程调度
 
 # 日期序列化和反序列化问题
 - 在前端传过来的时间往往是非标准的日期格式，后端在解析日期的时候会直接报错，如下是前端发送给后端的日期字符串：
