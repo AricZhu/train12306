@@ -1,6 +1,9 @@
 # 背景
 Java 高并发项目
 
+# 事务
+- 在同一个类的方法之间调用，事务不生效，所以要想事务生效，需要调用不同类的方法
+
 # 【前端】sessionStorage vs localStorage
 localStorage 和 sessionStorage 属性允许在浏览器中存储 key/value 对的数据。
 

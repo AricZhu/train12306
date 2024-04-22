@@ -56,6 +56,9 @@ public class ConfirmOrderService {
     @Autowired
     private DailyTrainSeatService dailyTrainSeatService;
 
+    @Autowired
+    private AfterConfirmOrderService afterConfirmOrderService;
+
     public void save(ConfirmOrderSaveReq req) {
         DateTime now = DateTime.now();
         ConfirmOrder confirmOrder = BeanUtil.copyProperties(req, ConfirmOrder.class);
@@ -169,6 +172,18 @@ public class ConfirmOrderService {
 
         // 最终选座结果
         LOG.info("最终选座结果: {}", finalSeatList);
+
+        // 选中座位后事务处理：
+        // 座位表修改售卖情况sell；
+        // 余票详情表修改余票；
+        // 为会员增加购票记录
+        // 更新确认订单为成功
+        try {
+            afterConfirmOrderService.afterDoConfirm(dailyTrainTicket, finalSeatList, tickets, confirmOrder);
+        } catch (Exception e) {
+            LOG.error("保存购票信息失败", e);
+            throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION);
+        }
     }
 
     private void getSeat(List<DailyTrainSeat> finalSeatList, Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {
