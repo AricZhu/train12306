@@ -388,8 +388,10 @@ export default defineComponent({
           // notification.success({description: "下单成功！"});
           visible.value = false;
           imageCodeModalVisible.value = false;
-          lineModalVisible.value = true;
+          // lineModalVisible.value = true;
+          lineModalVisible.value = false;
           confirmOrderId.value = data.content;
+          notification.success({description: "购票成功！"});
           // queryLineCount();
         } else {
           notification.error({description: data.message});

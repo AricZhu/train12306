@@ -43,7 +43,7 @@
 <!--        <table tableName="member" domainObjectName="Member">-->
 <!--            <property name="modelOnly" value="true" />-->
 <!--        </table>-->
-        <table tableName="passenger" domainObjectName="Passenger"/>
-<!--        <table tableName="ticket" domainObjectName="Ticket"/>-->
+<!--        <table tableName="passenger" domainObjectName="Passenger"/>-->
+        <table tableName="ticket" domainObjectName="Ticket"/>
     </context>
 </generatorConfiguration>
