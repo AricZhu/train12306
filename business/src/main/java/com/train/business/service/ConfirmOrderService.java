@@ -10,10 +10,11 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.train.business.domain.DailyTrainTicket;
+import com.train.business.domain.*;
 import com.train.business.enums.ConfirmOrderStatusEnum;
 import com.train.business.enums.SeatColEnum;
 import com.train.business.enums.SeatTypeEnum;
+import com.train.business.mapper.DailyTrainCarriageMapper;
 import com.train.business.req.ConfirmOrderDoReq;
 import com.train.business.req.ConfirmOrderTicketReq;
 import com.train.common.context.LoginMemberContext;
@@ -21,8 +22,6 @@ import com.train.common.exception.BusinessException;
 import com.train.common.exception.BusinessExceptionEnum;
 import com.train.common.response.PageResp;
 import com.train.common.util.SnowUtil;
-import com.train.business.domain.ConfirmOrder;
-import com.train.business.domain.ConfirmOrderExample;
 import com.train.business.mapper.ConfirmOrderMapper;
 import com.train.business.req.ConfirmOrderQueryReq;
 import com.train.business.req.ConfirmOrderSaveReq;
@@ -35,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -48,6 +48,12 @@ public class ConfirmOrderService {
 
     @Autowired
     private DailyTrainTicketService dailyTrainTicketService;
+
+    @Autowired
+    private DailyTrainCarriageService dailyTrainCarriageService;
+
+    @Autowired
+    private DailyTrainSeatService dailyTrainSeatService;
 
     public void save(ConfirmOrderSaveReq req) {
         DateTime now = DateTime.now();
@@ -100,8 +106,10 @@ public class ConfirmOrderService {
         confirmOrder.setCreateTime(now);
         confirmOrder.setUpdateTime(now);
         confirmOrder.setMemberId(LoginMemberContext.getId());
-        confirmOrder.setDate(dto.getDate());
-        confirmOrder.setTrainCode(dto.getTrainCode());
+        Date date = dto.getDate();
+        confirmOrder.setDate(date);
+        String trainCode = dto.getTrainCode();
+        confirmOrder.setTrainCode(trainCode);
         confirmOrder.setStart(dto.getStart());
         confirmOrder.setEnd(dto.getEnd());
         confirmOrder.setDailyTrainTicketId(dto.getDailyTrainTicketId());
@@ -110,7 +118,7 @@ public class ConfirmOrderService {
         confirmOrderMapper.insert(confirmOrder);
 
         // 查询余票记录，需要得到真实的库存
-        DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.selectByUnique(dto.getDate(), dto.getTrainCode(), dto.getStart(), dto.getEnd());
+        DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.selectByUnique(date, trainCode, dto.getStart(), dto.getEnd());
         LOG.info("查询余票记录：{}", dailyTrainTicket);
         LOG.info("<=== end do confirm");
 
@@ -146,43 +154,27 @@ public class ConfirmOrderService {
             }
             LOG.info("计算得到所有座位的相对第一个座位的偏移值：{}", offsetList);
 
+            getSeat(date, trainCode, ticketReq0.getSeatTypeCode(), ticketReq0.getSeat().split("")[0], offsetList);
         } else {
             LOG.info("本次购票没有选座");
+
+            for (ConfirmOrderTicketReq ticket : tickets) {
+                getSeat(date, trainCode, ticket.getSeatTypeCode(), null, null);
+            }
         }
+    }
 
-//        while (true) {
-//            // 取确认订单表的记录，同日期车次，状态是I，分页处理，每次取N条
-//            ConfirmOrderExample confirmOrderExample = new ConfirmOrderExample();
-//            confirmOrderExample.setOrderByClause("id asc");
-//            ConfirmOrderExample.Criteria criteria = confirmOrderExample.createCriteria();
-//            criteria.andDateEqualTo(dto.getDate())
-//                    .andTrainCodeEqualTo(dto.getTrainCode())
-//                    .andStatusEqualTo(ConfirmOrderStatusEnum.INIT.getCode());
-//            PageHelper.startPage(1, 5);
-//            List<ConfirmOrder> list = confirmOrderMapper.selectByExampleWithBLOBs(confirmOrderExample);
-//
-//            if (CollUtil.isEmpty(list)) {
-//                LOG.info("没有需要处理的订单，结束循环");
-//                break;
-//            } else {
-//                LOG.info("本次处理{}条订单", list.size());
-//            }
+    private void getSeat(Date date, String trainCode, String seatType, String column, List<Integer> offsetList) {
+        List<DailyTrainCarriage> carriageList = dailyTrainCarriageService.selectBySeatType(date, trainCode, seatType);
+        LOG.info("共查出{}个符合条件的车厢", carriageList.size());
 
-//            // 一条一条的卖
-//            list.forEach(confirmOrder -> {
-//                try {
-//                    sell(confirmOrder);
-//                } catch (BusinessException e) {
-//                    if (e.getE().equals(BusinessExceptionEnum.CONFIRM_ORDER_TICKET_COUNT_ERROR)) {
-//                        LOG.info("本订单余票不足，继续售卖下一个订单");
-//                        confirmOrder.setStatus(ConfirmOrderStatusEnum.EMPTY.getCode());
-//                        updateStatus(confirmOrder);
-//                    } else {
-//                        throw e;
-//                    }
-//                }
-//            });
-//        }
+        // 一个车厢一个车厢的获取座位数据
+        for (DailyTrainCarriage dailyTrainCarriage : carriageList) {
+            LOG.info("开始从车厢{}选座", dailyTrainCarriage.getIndex());
+            List<DailyTrainSeat> seatList = dailyTrainSeatService.selectByCarriage(date, trainCode, dailyTrainCarriage.getIndex());
+            LOG.info("车厢{}的座位数：{}", dailyTrainCarriage.getIndex(), seatList.size());
+
+        }
     }
 
     private void  reduceTicket(ConfirmOrderDoReq dto, DailyTrainTicket dailyTrainTicket) {
