@@ -16,6 +16,13 @@ Java 高并发项目
 
 ## nacos
 - 一个动态服务发现、配置管理和服务管理平台
+- 支持动态配置
+- 配合 gateway，实现按应用名来做路由转发，而不是机器 ip，如下：
+```
+# spring.cloud.gateway.routes[0].uri=http://127.0.0.1:8001
+
+spring.cloud.gateway.routes[0].uri=lb://member
+```
 
 # 事务
 - 在同一个类的方法之间调用，事务不生效，所以要想事务生效，需要调用不同类的方法
