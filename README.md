@@ -23,6 +23,14 @@ Java 高并发项目
 
 spring.cloud.gateway.routes[0].uri=lb://member
 ```
+- 配合 OpenFeign 可以实现按照应用名进行远程服务调用，如下：
+```java
+@FeignClient("business")
+// @FeignClient(name = "business", url = "http://127.0.0.1:8002/business")
+public interface BusinessFeign {
+  // ...
+}
+```
 
 # 事务
 - 在同一个类的方法之间调用，事务不生效，所以要想事务生效，需要调用不同类的方法
