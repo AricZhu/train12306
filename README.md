@@ -1,6 +1,88 @@
 # 背景
 Java 高并发项目
 
+# 缓存
+## 后端缓存
+- MySql 一级缓存
+  - 当方法上添加了事务后，对于完全相同的两次查询，第二次会直接使用一级缓存。如下：
+    ```java
+        @Service
+        public class TrainService {
+            // ...
+
+            @Transactional
+            public List<TrainQueryResp> queryAll() {
+                List<Train> trainList = selectAll();
+                
+                // 第二次查询时，因为添加了事务，所以会直接使用一级缓存
+                trainList = selectAll();
+                return BeanUtil.copyToList(trainList, TrainQueryResp.class);
+            }
+        }
+
+    ```
+  - 可以配置关闭一级缓存，如下。这时候即使开启了事务，但依然会每都重新查询
+    ```
+        # 配置为 statement，也就是关闭了 mybatis 一级缓存
+        mybatis.configuration.local-cache-scope=statement
+
+    ```
+
+- MySql 二级缓存
+  - 多次查询同一个接口，只会在第一次查询时调用数据库，后续直接使用缓存，这个就是二级缓存
+  - 二级缓存通过在 '/mapper/XxxMapper.xml' 文件中添加 '<cache></cache>'标签开启，同时需要注意对返回对象进行**序列化**，这样 mybatis 才能保存对象，并在下次查询时直接返回
+  - 二级缓存的实效：执行增、删、改操作后，二级缓存会自动失效，即使增、删、改操作没有对数据库做任何的改动，Mybatis 都会将同个命名空间下的二级缓存清空
+  - 二级缓存只存在当前机器上，所以如果一台机器执行了增、删、改后会清空二级缓存，而另一台机器没有清空二级缓存，会导致两台机器的查询结果不一致，是一个致命问题，因此一般生产环境中不做这种二级缓存
+
+- 本地缓存(SpringBoot 缓存)：会有各节点不同步的问题
+  - @Cacheable
+  - 在 service 层直接缓存，不需要走后续的数据库查询，效率更高
+  - 原理：开辟一块空间，根据不同的请求参数空间内会缓存多个结果，会根据请求参数的 hashCode 和 equals 方法判断当前对象是否已经在缓存中了，因此一定要对请求参数生成 hashCode 和 equals 方法，用于生成 key，同时在生成的时候要考虑请求参数的父类属性
+  - 缺点：这个缓存和数据库中的数据无关，只要请求参数一致，就会返回缓存的内容
+  - @CachePut: 强制刷新缓存，一般配合 @Cacheable 一起使用
+
+- 分布式缓存(redis)：解决各节点不同的问题
+  - 提高访问速度，mysql 单机 QPS 约为 2000，redis 约 10万
+  - 实现多节点共享缓存，机器重启也不会丢失缓存数据
+  - redis 常用于放用户的登录信息，早期没有 redis 时，登录信息都放在 session 中，应用一重启，登录就没有了，多节点 session 又是另一个头大的问题
+  - 在开启上述 SpringBoot 缓存后（@Cacheable），直接增加下面的 redis 缓存配置后，就自动使用 redis 缓存替换 spring boot 的缓存：
+    ```
+    # redis 缓存
+    spring.cache.type=redis
+    spring.cache.redis.use-key-prefix=true
+    spring.cache.redis.key-prefix=train12306_cache_
+    spring.cache.redis.cache-null-values=true
+    spring.cache.redis.time-to-live=10s
+    ```
+- 缓存失效
+  - 一般缓存都会存在一个过期时间，如果在缓存过期后此时有大量的请求进来的话，会导致机器卡死，这个也就是缓存失效导致的问题
+  - 解决方案1: 每隔一段时间去主动刷新缓存
+  - 解决方案2: 增加分布式锁，只让一个请求成功，其他请求快速失败，让用户稍后重试
+- 缓存穿透
+  - 一般在使用缓存的时候会先判断缓存中有没有数据，如果有则直接使用缓存中的数据，如果没有再去查询数据库。而在数据库本身就没有数据的情况下，那么每次的缓存判断都会失败，这就是缓存穿透
+  - 解决方案1: 需要区分下空列表和无缓存的情况
+  - SpringBoot 中使用 redis 缓存后，只要开启允许 null，就会默认解决缓存穿透问题
+- 缓存雪崩
+  - 由于短时间内大量的 key 失效，导致数据库压力剧增
+- 常见的缓存过期策略
+  - TTL 超时时间
+  - LRU 最近最少使用
+  - LFU 最近最不经常使用
+  - FIFO 先进先出
+  - Random 随机淘汰策略
+
+## 一个实际的缓存案例分享
+- 场景：一个网站有很多会员，每天会员只会在一段时间内集中请求多次
+- 问题：多次调用查询会员的方法，多次访问数据库
+- 解决：使用本地缓存，1分钟内有效
+- 问题：使用本地缓存后，会在短时间内产生大量的缓存对象，导致程序 fullgc 频繁，导致大量请求短时间内请求失败
+- 解决：去掉本地缓存，使用线程本地变量
+- 本场景的总结：缓存一般应用在读多写少的场景下，而且是对应同一个变量，本场景中由于每个会员的信息都不一样，如果都缓存下来就会很容易占满内存，从而导致 fullgc
+
+## 前端缓存
+- 前端 sessionStorage：会话期内
+- 前端 localStorage：永久****
+
 # 注册中心与配置中心
 
 ## 注册中心
