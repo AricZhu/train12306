@@ -1,6 +1,32 @@
 # 背景
 Java 高并发项目
 
+# Filter 和 Interceptor 的区别
+- Filter 是过滤器，由 Servlet 容器提供，在请求进入容器后，在进入 Servlet 之前执行 Filter
+- Interceptor 是拦截器，由 Spring 提供，可以获取 Spring 中的很多 Bean
+- Filter 可以修改 request，而 Interceptor 不能
+
+![filter_interceptor](./docs/images/filter_interceptor.png)
+
+![process](./docs/images/process.png)
+
+## Filter 应用场景
+- 过滤敏感词汇（防止sql注入）
+- 设置字符编码
+- URL级别的权限访问控制
+- 压缩响应信息
+
+## Interceptor 应用场景
+拦截器本质上是面向切面编程（AOP），符合横切关注点的功能都可以放在拦截器中来实现，主要的应用场景包括：
+
+- 登录验证，判断用户是否登录。
+- 权限验证，判断用户是否有权限访问资源，如校验token
+- 日志记录，记录请求操作日志（用户ip，访问时间等），以便统计请求访问量。
+- 处理cookie、本地化、国际化、主题等。
+- 性能监控，监控请求处理时长等。
+- 通用行为：读取cookie得到用户信息并将用户对象放入请求，从而方便后续流程使用，还有如提取Locale、Theme信息等，只要是多个处理器都需要的即可使用拦截器实现）
+
+
 # 缓存
 ## 后端缓存
 - MySql 一级缓存
