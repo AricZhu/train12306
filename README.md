@@ -1,6 +1,35 @@
 # 背景
 Java 高并发项目
 
+# 分布式锁解决库存超卖
+- synchronized 能否解决超卖问题
+  - synchronized 只能保证单个机器上没有超卖问题，但在多个机器上依然会有超卖问题
+  - 加上锁以后性能明显降低，系统吞吐率下降
+- 可以通过数据库来实现
+  - 锁的信息放在表中保存
+  - 所有节点都可以从表中获取锁
+  - 优点是相比于 synchronized 方案，可以保证多个机器上都没有并发问题，解决超卖问题
+  - 缺点是性能太差
+- 使用 redis 分布式锁
+  - setIfAbsent/setnx: 设置 5s 超时
+    ```
+        Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
+
+        if (Boolean.TRUE.equals(setIfAbsent)) {
+            LOG.info("恭喜，抢到锁了! lockKey: {}", lockKey);
+        } else {
+            LOG.info("很遗憾，没抢到锁! lockKey: {}", lockKey);
+            throw new BusinessException(BusinessExceptionEnum.CONFIRM_NOT_LOCK);
+
+        }
+    ```
+  - 为了提升性能，将 key 设置为 日期+车次，这样不同车次不会相互影响，最大程度的提升性能
+  - 上述的设置锁的超时时间会有问题，如果业务的执行时间超过了设置的超时时间，那么后面其他线程都会因为超时而获取不到锁，从而影响业务的运行
+  - 上述问题的解决方案：使用 Redis 看门狗，可以自动刷新锁的超时时间，防止因为业务执行时间超过锁的过期时间而导致问题。比如业务执行需要10s，看门狗初始将锁设置为 30s超时，然后看门狗每隔 5s中刷新下锁的超时时间，所以从倒计时 30s 开始，当到了 25s 后，看门狗发现业务还未执行完成，就将锁的过期时间刷新到 30s，然后继续监控，直到业务执行完成并释放锁
+  - 上述看门狗的方案也会有问题：redis 如果宕机了，主备机切换后，锁的互斥性就失效了
+  - Redis 红锁可以解决上述的问题，但成本太高，实际生产环境中不常使用。
+
+
 # 分布式事务组件 Seata
 - Seata 是一款开源的分布式事务解决方案，致力于在微服务架构下提供高性能和简单易用的分布式事务服务
 - 提供 4 种事务模式：AT、TCC、SAGA 和 XA
